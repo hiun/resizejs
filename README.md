@@ -30,7 +30,7 @@ Aother case such as `maxWidth` is higher than `maxHeight`, but actual width is s
 
 ##Config Example
 ```javascript
-var blob = resizejs({
+resizejs({
     img: document.querySelector('#img').files[0],
     maxWidth: 850,
     maxHeight: 850,
