@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>resizejs</title>
+</head>
+<body style="font-family: 'Helvetica Neue', Helvetica, 'Lucida Sans', Sans-serif;">
+	<p><span style="font-size: 30px;">resizejs </span>
+	<span style="font-size: 16px"><i>Browser-side resizing made simple.</i></span></p><a href="https://github.com/hiun/resizejs"></a>
+	<label for="maxWidth">Max Width : </label><input type="text" id="maxWidth" value="500">&nbsp;&nbsp;&nbsp;
+	<label for="maxHeight">Max Height : </label><input type="text" id="maxHeight" value="500"><br><br>
+	<input id="img" type="file"><br><br>
+	<input id="btn" type="submit"><br><br><br>
+	<p class="info" style="visibility: hidden;">original image</p>
+	<img id="preview" style="width: 100%;"></img><br>
+	<p class="info" style="visibility: hidden;">resized image</p>
+	<img id="after" style="width: 100%;"></img><br>
+	<script src="../resize.js"></script>
+	<script>
+		document.querySelector('#btn').onclick = function () {
+			resizejs({
+				img: document.querySelector('#img').files[0],
+				maxWidth: document.querySelector('#maxWidth').value,
+				maxHeight: document.querySelector('#maxHeight').value,
+				previewCb: function (dataURL) {
+					document.querySelector('#preview').src = dataURL;
+				},
+				afterCb: function (dataURL) {
+					console.log(dataURL)
+					document.querySelector('#after').src = dataURL;
+				},
+			  invalidImgCb: alert,
+			  success: function (blob) {
+			  	document.getElementsByClassName('info')[0].style.visibility = 'visible'
+			  	document.getElementsByClassName('info')[1].style.visibility = 'visible'
+			 	}
+			});
+		}
+	</script>
+</body>
+</html>
