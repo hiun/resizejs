@@ -9,7 +9,7 @@ Browser-side resizing made simple.
 
 - Resizing image methodology was referenced by [Mozilla Hacks](https://hacks.mozilla.org/2011/01/how-to-develop-a-html5-image-uploader/). resizejs is more likely a web friendly wrapper on top of this fundamental technologies.
 
-##Options
+##Config Options
 To configure resizejs, pass single object with following key and value pairs.
 
 key | necessity | type | arguments | notes
@@ -28,23 +28,23 @@ notes: In case when value of `maxWidth` and `maxHeigh`t are same, the image will
 Aother case such as `maxWidth` is higher than `maxHeight`, but actual width is smaller than it's height will ignore aspect ratio. Oppositely, `maxHeight` is higher but width of actual image is smaller which also cause ignorance of aspect ratio.
 
 
-##examples
+##Config Example
 ```javascript
 var blob = resizejs({
-img: document.querySelector('#img').files[0],
-maxWidth: 850,
-maxHeight: 850,
-exts: ['tiff', 'p2'],
-previewCb: function (dataURL) {
-  document.querySelector('#preview').src = dataURL;
-},
-afterCb: function (dataURL) {
-  document.querySelector('#after').src = dataURL;
-},
-invalidImgCb: alert,
-success: function (blob) {
-  alert('succeed!');
-}
+    img: document.querySelector('#img').files[0],
+    maxWidth: 850,
+    maxHeight: 850,
+    exts: ['tiff', 'p2'],
+    previewCb: function (dataURL) {
+      document.querySelector('#preview').src = dataURL;
+    },
+    afterCb: function (dataURL) {
+      document.querySelector('#after').src = dataURL;
+    },
+    invalidImgCb: alert,
+    success: function (blob) {
+      alert('succeed!');
+    }
 });
 ```
 
