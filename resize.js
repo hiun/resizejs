@@ -9,32 +9,6 @@ function resizejs (cfg) {
 
 	/* helper functions */
 
-	/*
-	function toVanillaJS (dom) {
-
-		//check if dom is jQuery warpped.
-		if (dom[0] !== undefined) {
-			
-			//if dom is not valid jQuery warpped, throw an err
-			if (dom[0].nodeName === undefined) {
-				throw 'Invalid DOM Object in the arguments';
-			} else {
-				return dom[0];
-			}
-
-		} else {
-		
-			//check if dom is vanillajs
-			if (dom.nodeName !== undefined) {
-				return dom;
-			} else {
-				throw 'Invalid DOM Object in the arguments';
-			}
-		
-		}
-	}
-	*/
-
 	function isDom (dom) {
 		if (!dom.nodeName) {
 			throw 'Invalid DOM Object in the arguments';
@@ -65,66 +39,81 @@ function resizejs (cfg) {
 		//create intermediate img node
 		var imgNode = document.createElement('img');
 
-		//initialize HTML5 file api
+		//initialize HTML5 FileReader
 		var reader = new FileReader();
 
-		//invoke dataurl function
+		//read 'File' typed img as a dataUrl
 		reader.readAsDataURL(img);
 
 		//write preview when done
 		reader.onload = function (e) {
+
 			var dataURL = e.target.result;
-			imgNode.src = dataURL;
-			//$('#user-post-photo-preview').show();
+
+			//invoke preview callback
 			previewCb(dataURL);
 
-			var mimeType = dataURL.split(",")[0].split(":")[1].split(";")[0];
+			//change src attribute of image
+			imgNode.src = dataURL;
 
-			var ext = mimeType.slice(6);
+			imgNode.onload = function () {
 
-			if (ext === 'jpg' || ext === 'jpeg' || ext === 'png' || ext === 'gif' || exts.indexOf(ext) !== -1) {
+				var mimeType = dataURL.split(",")[0].split(":")[1].split(";")[0];
 
-				//resize, initialize canvas
-				var canvas = document.createElement('canvas');
-				var ctx = canvas.getContext("2d");
-				ctx.drawImage(imgNode, 0, 0);
+				var ext = mimeType.slice(6);
 
-				var width = imgNode.naturalWidth;
-				var height = imgNode.naturalHeight;
+				if (ext === 'jpeg' || ext === 'png' || ext === 'gif' || exts.indexOf(ext) !== -1) {
 
-				if (width > height) {
-					if (width > MAX_WIDTH) {
-						height *= MAX_WIDTH / width;
+					//get natural WH of img
+					var width = imgNode.naturalWidth;
+					var height = imgNode.naturalHeight;
+
+					//calculate optimal WH of img by user defined WH
+					if (width > height) {
+						if (width > MAX_WIDTH) {
+							height *= MAX_WIDTH / width;
+							width = MAX_WIDTH;
+						}
+					} else if (height < width) {
+						if (height > MAX_HEIGHT) {
+							width *= MAX_HEIGHT / height;
+							height = MAX_HEIGHT;
+						}
+					} else {	
 						width = MAX_WIDTH;
-					}
-				} else if (height < width) {
-					if (height > MAX_HEIGHT) {
-						width *= MAX_HEIGHT / height;
 						height = MAX_HEIGHT;
 					}
+
+					//resize, initialize canvas
+					var canvas = document.createElement('canvas');
+
+					//setting up					
+					canvas.width = width;
+					canvas.height = height;
+					
+
+					var newCtx = canvas.getContext("2d");
+
+					newCtx.drawImage(imgNode, 0, 0, width, height);
+
+
+					var resizedDataURL = canvas.toDataURL();
+
+					afterCb(resizedDataURL)
+
+					cb(resizedDataURL);
+				
 				} else {
-					width = MAX_WIDTH;
-					height = MAX_HEIGHT;
+					invalidImgCb();
 				}
 
-				canvas.width = width;
-				canvas.height = height;
-
-				var newCtx = canvas.getContext("2d");
-				newCtx.drawImage(imgNode, 0, 0, width, height);
-				var resizedDataURL = canvas.toDataURL(newCtx);
-				
-				afterCb(resizedDataURL)
-
-				return cb(resizedDataURL);
-			
-			} else {
-				invalidImgCb();
 			}
 		};
 	}
 
 	function dataURLToBlob (dataURL) {
+
+		// http://stackoverflow.com/questions/23945494/use-html5-to-resize-an-image-before-upload
 
 		if (typeof dataURL !== 'string') {
 			return null;
@@ -133,27 +122,28 @@ function resizejs (cfg) {
 		var BASE64_MARKER = ';base64,';
 
 		if (dataURL.indexOf(BASE64_MARKER) == -1) {
+
 			var parts = dataURL.split(',');
 			var contentType = parts[0].split(':')[1];
-			console.log(contentType)
 			var raw = decodeURIComponent(parts[1]);
 
 			return new Blob([raw], {type: contentType});
+
+		} else {
+
+			var parts = dataURL.split(BASE64_MARKER);
+			var contentType = parts[0].split(':')[1];
+			var raw = window.atob(parts[1]);
+			var rawLength = raw.length;
+			var uInt8Array = new Uint8Array(rawLength);
+
+			for (var i = 0; i < rawLength; ++i) {
+				uInt8Array[i] = raw.charCodeAt(i);
+			}
+
+			return new Blob([uInt8Array], {type: contentType});
+
 		}
-
-		var parts = dataURL.split(BASE64_MARKER);
-		var contentType = parts[0].split(':')[1];
-		var raw = window.atob(parts[1]);
-		var rawLength = raw.length;
-
-		var uInt8Array = new Uint8Array(rawLength);
-
-		for (var i = 0; i < rawLength; ++i) {
-			uInt8Array[i] = raw.charCodeAt(i);
-		}
-
-		return new Blob([uInt8Array], {type: contentType});
-
 	}
 
 	/* entry logic */
