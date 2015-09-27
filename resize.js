@@ -171,8 +171,8 @@ function resizejs (cfg) {
 			!MAX_HEIGHT || 
 			typeof MAX_WIDTH !== 'number' ||
 			typeof MAX_HEIGHT !== 'number' ||
-			MAX_WIDTH > 0 ||
-			MAX_HEIGHT > 0) {
+			MAX_WIDTH < 0 ||
+			MAX_HEIGHT < 0) {
 		throw 'maxWidth and maxHeight is invalid.';
 	}
 
