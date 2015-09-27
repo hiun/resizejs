@@ -15,21 +15,6 @@ function resizejs (cfg) {
 		}
 	}	
 
-	function WHValiator (MAX_WIDTH, MAX_HEIGHT) {
-
-		if (!MAX_WIDTH && !MAX_HEIGHT) {
-			throw 'maxWidth and maxHeight is invalid.';
-		}
-
-		if (!MAX_HEIGHT) {
-			MAX_HEIGHT === MAX_WIDTH
-		}
-
-		if (!MAX_WIDTH) {
-			MAX_WIDTH === MAX_HEIGHT;
-		}
-	}
-
 	/* core logic */
 
 	function resizeImg (img, cb) {
@@ -182,7 +167,14 @@ function resizejs (cfg) {
 	var success = cfg.success;
 	var exts = cfg.exts;
 
-	WHValiator(MAX_WIDTH, MAX_HEIGHT);
+	if (!MAX_WIDTH || 
+			!MAX_HEIGHT || 
+			typeof MAX_WIDTH !== 'number' ||
+			typeof MAX_HEIGHT !== 'number' ||
+			MAX_WIDTH > 0 ||
+			MAX_HEIGHT > 0) {
+		throw 'maxWidth and maxHeight is invalid.';
+	}
 
 	resizeImg(img, function (resizedImg) {
 		success(dataURLToBlob(resizedImg));
