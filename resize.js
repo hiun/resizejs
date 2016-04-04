@@ -159,8 +159,8 @@ function resizejs (cfg) {
 		throw 'Input img is invalid or undefined';
 	}
 
-	var MAX_WIDTH = cfg.maxWidth;
-	var MAX_HEIGHT = cfg.maxHeight;
+	var MAX_WIDTH = parseInt(cfg.maxWidth);
+	var MAX_HEIGHT = parseInt(cfg.maxHeight);
 	var previewCb = cfg.previewCb;
 	var afterCb = cfg.afterCb;
 	var invalidImgCb = cfg.invalidImgCb;
